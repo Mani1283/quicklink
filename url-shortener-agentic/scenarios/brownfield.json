@@ -1,0 +1,14 @@
+{
+  "scenario": "brownfield",
+  "request": "In an existing URL shortener, add click analytics while preserving the current create and redirect API contracts. Do not retain personal request metadata.",
+  "decomposition": [
+    {"stage": "requirements", "depends_on": []},
+    {"stage": "codebase_analysis", "depends_on": ["requirements"], "exit_gate": "Impacted modules and data flow recorded"},
+    {"stage": "architecture", "depends_on": ["codebase_analysis"]},
+    {"stage": "policy", "depends_on": ["requirements"]},
+    {"stage": "implementation", "depends_on": ["architecture", "policy"], "human_gate": true},
+    {"stage": "validation", "depends_on": ["implementation"], "exit_gate": "Compatibility and analytics tests pass"},
+    {"stage": "documentation", "depends_on": ["implementation"]},
+    {"stage": "release", "depends_on": ["validation", "documentation"], "human_gate": true}
+  ]
+}

@@ -1,0 +1,10 @@
+[project]
+name = "agentic-url-shortener"
+version = "0.1.0"
+description = "Governed agentic engineering prototype and URL shortener service"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

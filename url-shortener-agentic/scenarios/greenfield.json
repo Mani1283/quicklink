@@ -1,0 +1,13 @@
+{
+  "scenario": "greenfield",
+  "request": "Build a URL shortener with secure redirects, expiry, aggregate click analytics, tests, and setup documentation.",
+  "decomposition": [
+    {"stage": "requirements", "depends_on": [], "exit_gate": "Acceptance criteria and open questions recorded"},
+    {"stage": "architecture", "depends_on": ["requirements"], "exit_gate": "Components and decisions recorded"},
+    {"stage": "policy", "depends_on": ["requirements"], "exit_gate": "Security and data handling checks pass"},
+    {"stage": "implementation", "depends_on": ["architecture", "policy"], "human_gate": true},
+    {"stage": "validation", "depends_on": ["implementation"]},
+    {"stage": "documentation", "depends_on": ["implementation"]},
+    {"stage": "release", "depends_on": ["validation", "documentation"], "human_gate": true}
+  ]
+}

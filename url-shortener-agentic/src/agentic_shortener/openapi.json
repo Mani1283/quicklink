@@ -1,0 +1,34 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Agentic URL Shortener API",
+    "version": "0.2.0",
+    "description": "Short-link service and governed software-engineering orchestration API. Generated implementation artifacts remain proposals until reviewed."
+  },
+  "servers": [{"url": "http://127.0.0.1:8000"}],
+  "paths": {
+    "/health": {"get": {"summary": "Health check", "responses": {"200": {"description": "Service is ready"}}}},
+    "/api/shorten": {"post": {"summary": "Create a short link", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ShortenRequest"}}}}, "responses": {"201": {"description": "Link created"}, "400": {"description": "Invalid input"}, "429": {"description": "Rate limit exceeded"}}}},
+    "/{code}": {"get": {"summary": "Redirect and record a click", "parameters": [{"name": "code", "in": "path", "required": true, "schema": {"type": "string", "minLength": 4, "maxLength": 16, "pattern": "^[A-Za-z0-9]+$"}}], "responses": {"302": {"description": "Redirect to destination"}, "404": {"description": "Unknown or expired code"}}}},
+    "/api/links/{code}": {"get": {"summary": "Get link metadata and aggregate analytics", "parameters": [{"name": "code", "in": "path", "required": true, "schema": {"type": "string"}}], "responses": {"200": {"description": "Link metadata"}, "404": {"description": "Unknown or expired code"}}}},
+    "/api/orchestration/scenarios": {"get": {"summary": "List scenario DAGs", "responses": {"200": {"description": "Scenario catalog"}}}},
+    "/api/orchestration/runs": {"post": {"summary": "Start a governed engineering run", "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/RunRequest"}}}}, "responses": {"201": {"description": "Run created or blocked by policy"}}}},
+    "/api/orchestration/runs/{run_id}": {"get": {"summary": "Read run state, decisions, artifacts, and events", "parameters": [{"$ref": "#/components/parameters/RunId"}], "responses": {"200": {"description": "Run snapshot"}, "404": {"description": "Run not found"}}}},
+    "/api/orchestration/runs/{run_id}/approvals": {"post": {"summary": "Approve or reject a version-bound gate", "parameters": [{"$ref": "#/components/parameters/RunId"}], "requestBody": {"required": true, "content": {"application/json": {"schema": {"$ref": "#/components/schemas/ApprovalRequest"}}}}, "responses": {"200": {"description": "Decision recorded and run advanced"}, "400": {"description": "Stale or invalid gate"}}}},
+    "/api/orchestration/runs/{run_id}/replan": {"post": {"summary": "Revise an active request and invalidate previous outputs and gates", "parameters": [{"$ref": "#/components/parameters/RunId"}], "responses": {"200": {"description": "New plan version"}}}},
+    "/api/orchestration/runs/{run_id}/retry": {"post": {"summary": "Request a bounded retry", "parameters": [{"$ref": "#/components/parameters/RunId"}], "responses": {"200": {"description": "Retry decision recorded"}}}},
+    "/api/orchestration/runs/{run_id}/rollback": {"post": {"summary": "Rollback a workflow stage and dependent artifacts", "parameters": [{"$ref": "#/components/parameters/RunId"}], "responses": {"200": {"description": "Workflow state rolled back"}}}},
+    "/api/orchestration/runs/{run_id}/stop": {"post": {"summary": "Safe-stop a run", "parameters": [{"$ref": "#/components/parameters/RunId"}], "responses": {"200": {"description": "Run stopped"}}}},
+    "/api/orchestration/metrics": {"get": {"summary": "Get workflow reliability metrics", "responses": {"200": {"description": "Metrics snapshot"}}}},
+    "/api/orchestration/audit/verify": {"get": {"summary": "Verify the JSONL hash chain", "responses": {"200": {"description": "Verification result"}}}}
+  },
+  "components": {
+    "parameters": {"RunId": {"name": "run_id", "in": "path", "required": true, "schema": {"type": "string", "format": "uuid"}}},
+    "schemas": {
+      "ShortenRequest": {"type": "object", "required": ["url"], "additionalProperties": false, "properties": {"url": {"type": "string", "format": "uri", "maxLength": 2048}, "expires_in_days": {"type": ["integer", "null"], "minimum": 1, "maximum": 3650}}},
+      "RunRequest": {"type": "object", "required": ["scenario", "request"], "additionalProperties": false, "properties": {"scenario": {"type": "string", "enum": ["greenfield", "brownfield", "ambiguous"]}, "request": {"type": "string", "minLength": 1, "maxLength": 10000}, "repository_path": {"type": ["string", "null"], "description": "Optional local path contained by ALLOWED_REPOSITORY_ROOTS"}}},
+      "ApprovalRequest": {"type": "object", "required": ["gate_id", "decision", "actor"], "additionalProperties": false, "properties": {"gate_id": {"type": "string", "format": "uuid"}, "decision": {"type": "string", "enum": ["approve", "reject"]}, "actor": {"type": "string", "minLength": 1, "maxLength": 120}, "rationale": {"type": "string", "maxLength": 2000}}},
+      "Error": {"type": "object", "required": ["error"], "properties": {"error": {"type": "string"}}}
+    }
+  }
+}

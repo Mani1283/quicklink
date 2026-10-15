@@ -1,0 +1,16 @@
+{
+  "scenario": "ambiguous",
+  "request": "Add analytics to shortened links and retain the data for an appropriate period.",
+  "ambiguities": ["Retention period", "Deletion behavior", "Whether analytics need user-level detail"],
+  "safe_assumptions": ["Aggregate click count only", "No IP, user-agent, or referrer retention"],
+  "decomposition": [
+    {"stage": "requirements", "depends_on": []},
+    {"stage": "clarification", "depends_on": ["requirements"], "human_gate": true},
+    {"stage": "architecture", "depends_on": ["clarification"]},
+    {"stage": "policy", "depends_on": ["requirements"]},
+    {"stage": "implementation", "depends_on": ["architecture", "policy"], "human_gate": true},
+    {"stage": "validation", "depends_on": ["implementation"]},
+    {"stage": "documentation", "depends_on": ["implementation"]},
+    {"stage": "release", "depends_on": ["validation", "documentation"], "human_gate": true}
+  ]
+}
